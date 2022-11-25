@@ -38,6 +38,7 @@ def main(data_dir, dest_dir, num_classes, batch_size, num_epochs, keep_feature_e
 
     # Detect if we have a GPU available
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(device)
 
     # Send the model to GPU
     model_deeplabv3 = model_deeplabv3.to(device)

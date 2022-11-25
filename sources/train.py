@@ -48,6 +48,9 @@ def train_model(model, num_classes, dataloaders, criterion, optimizer, device, d
 
     counter = 0
 
+    last_checkpoints = []
+    new_best_val = False
+
     for epoch in range(1, num_epochs+1):
         print('Epoch {}/{}'.format(epoch, num_epochs))
         print('-' * 10)
@@ -112,12 +115,27 @@ def train_model(model, num_classes, dataloaders, criterion, optimizer, device, d
             if phase == 'val' and epoch_acc > best_acc:
                 best_acc = epoch_acc
                 best_model_state_dict = copy.deepcopy(model.state_dict())
+                new_best_val = True
             if phase == 'val':
                 val_acc_history.append(epoch_acc)
 
             # Save current model every 25 epochs
-            if 0 == epoch%25:
-                current_model_path = os.path.join(dest_dir, f"checkpoint_{epoch:04}_DeepLabV3_Skydiver.pth")
+            if phase == 'val' and 0 == epoch%1:
+
+                current_model_path = os.path.join(dest_dir, f"checkpoint_{epoch:04}_DeepLabV3.pth")
+
+                # Remove old checkpoint
+                last_checkpoints.append(current_model_path)
+                if len(last_checkpoints) > 2:
+                    old_ckpt = last_checkpoints.pop(0)  # file_path_nerf
+                    if os.path.exists(old_ckpt):
+                        os.remove(old_ckpt)
+
+                if new_best_val:
+                    print(f"Save new best val model : best_DeepLabV3_checkpoint.pth")
+                    torch.save(best_model_state_dict, os.path.join(dest_dir, "best_DeepLabV3_checkpoint.pth"))
+                    new_best_val = False
+
                 print(f"Save current model : {current_model_path}")
                 torch.save(model.state_dict(), current_model_path)
 
