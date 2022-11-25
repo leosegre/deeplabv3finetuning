@@ -120,7 +120,7 @@ def train_model(model, num_classes, dataloaders, criterion, optimizer, device, d
                 val_acc_history.append(epoch_acc)
 
             # Save current model every 25 epochs
-            if phase == 'val' and 0 == epoch%1:
+            if phase == 'val' and 0 == epoch%25:
 
                 current_model_path = os.path.join(dest_dir, f"checkpoint_{epoch:04}_DeepLabV3.pth")
 
